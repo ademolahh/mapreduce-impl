@@ -33,7 +33,7 @@ jobs:
         run: go vet ./...
 
       - name: Build plugin (a.so)
-        run: go build -buildmode=plugin -o a.so ./plugin
+        run: go build -buildmode=plugin -o a.so ./apps
 
       - name: Run tests
         run: go test -v ./...
@@ -41,4 +41,4 @@ jobs:
       - name: Run program
         run: |
           mkdir -p words/text words/result
-          go run . -build a.so
+          go run ./sequential -build=a.so
