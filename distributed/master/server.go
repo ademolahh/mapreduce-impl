@@ -1,21 +1,30 @@
 package master
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"net/rpc"
+	"os"
+	"strconv"
 )
 
-func Serve() error {
-	master := New([]string{}, 1)
+func Serve(files []string, nr int) error {
+	master := New(files, nr)
 	if err := rpc.Register(master); err != nil {
 		return err
 	}
 
-	listener, err := net.Listen("unix", "var/tmp/mr-1")
+	socketName := c()
+	os.Remove(socketName)
+
+	listener, err := net.Listen("unix", socketName)
 	if err != nil {
 		return err
 	}
+	fmt.Println("Started")
+
+	go master.Checker()
 
 	for {
 		conn, err := listener.Accept()
@@ -30,4 +39,10 @@ func Serve() error {
 	}
 
 	return nil
+}
+
+func c() string {
+	sct := "/tmp/mr-"
+	sct += strconv.Itoa(os.Getuid())
+	return sct
 }

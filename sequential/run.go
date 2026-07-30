@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"sort"
+
+	"github.com/ademolahh/map-reduce-impl/shared"
 )
 
 const READ_FOLDER string = "words/text"
@@ -13,7 +15,7 @@ const OUT_PATH = "words/result/result.txt"
 func Run() error {
 	build := buildFlag()
 
-	mps, rdc, err := fetch(build)
+	mps, rdc, err := shared.Fetch(build)
 	if err != nil {
 		return fmt.Errorf("error: %w", err)
 	}

@@ -2,60 +2,38 @@ package master
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
+
+	"github.com/ademolahh/map-reduce-impl/shared"
 )
-
-type StateType int
-
-const (
-	_ StateType = iota
-	Idle
-	Inprogress
-	Done
-)
-
-type TaskType int
-
-const (
-	_ TaskType = iota
-	Map
-	Reduce
-)
-
-type Task struct {
-	Input string
-	Start time.Time
-	Type  TaskType
-	State StateType
-	R     int
-}
 
 type Master struct {
 	mu          sync.Mutex
 	mapCount    int
 	reduceCount int
-	task        map[string]*Task
+	task        map[string]*shared.Task
 }
 
 func New(files []string, nr int) *Master {
-	task := make(map[string]*Task)
+	task := make(map[string]*shared.Task)
 
 	for i, file := range files {
 		t := fmt.Sprintf("map-%d", i)
-		task[t] = &Task{
+		task[t] = &shared.Task{
 			Input: file,
-			Type:  Map,
-			State: Idle,
+			Type:  shared.Map,
+			State: shared.Idle,
 		}
 	}
 
 	for i := range nr {
 		r := fmt.Sprintf("reduce-%d", i)
-		task[r] = &Task{
-			Type:  Reduce,
-			State: Idle,
-			R:     i,
+		task[r] = &shared.Task{
+			Type:  shared.Reduce,
+			State: shared.Idle,
+			R:     strconv.Itoa(i),
 		}
 	}
 
@@ -66,16 +44,73 @@ func New(files []string, nr int) *Master {
 	}
 }
 
-type GetTaskRequest struct{}
-type GetTaskResponse struct{}
+func (m *Master) GetTask(req shared.GetTaskRequest, res *shared.GetTaskResponse) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	var input string
+	var task shared.TaskType
 
-func (m *Master) GetTask(req GetTaskRequest, res *GetTaskResponse) error {
+	for _, t := range m.task {
+		if m.mapCount > 0 {
+			if t.Type == shared.Map && t.State == shared.Idle {
+				// response
+				input = t.Input
+				task = shared.Map
+
+				// master details
+				t.Start = time.Now()
+				t.State = shared.Inprogress
+				break
+			}
+		} else {
+			if t.State == shared.Idle && t.Type == shared.Reduce {
+				// response
+				input = t.R
+				task = shared.Reduce
+
+				// master details
+				t.Start = time.Now()
+				t.State = shared.Inprogress
+
+				break
+			}
+		}
+	}
+
+	*res = shared.GetTaskResponse{
+		Input: input,
+		Task:  task,
+	}
 	return nil
 }
 
-type CompleteTaskRequest struct{}
-type CompleteTaskResponse struct{}
+func (m *Master) CompleteTask(req shared.CompleteTaskRequest, res *shared.CompleteTaskResponse) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
-func (m *Master) CompleteTask(req CompleteTaskRequest, res CompleteTaskResponse) error {
+	if m.task[req.Output].State != shared.Inprogress {
+		return fmt.Errorf("invalid state")
+	}
+
+	m.task[req.Output].State = shared.Done
+	if req.Task == shared.Map {
+		m.mapCount--
+	} else {
+		m.reduceCount--
+	}
+
 	return nil
+}
+
+func (m *Master) Checker() {
+	for {
+		time.Sleep(1 * time.Second)
+		m.mu.Lock()
+		for _, t := range m.task {
+			if t.State == shared.Inprogress && time.Since(t.Start) > 10*time.Second {
+				t.State = shared.Idle
+			}
+		}
+		m.mu.Unlock()
+	}
 }
