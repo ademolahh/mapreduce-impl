@@ -1,5 +1,6 @@
 package shared
 
 type KV struct {
-	Word, Value string
+	Word  string `json:"word"`
+	Value string `json:"value"`
 }
