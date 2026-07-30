@@ -1,4 +1,4 @@
-package main
+package sequential
 
 import "github.com/ademolahh/map-reduce-impl/shared"
 
