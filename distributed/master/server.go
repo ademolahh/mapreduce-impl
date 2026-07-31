@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/rpc"
 	"os"
-	"strconv"
 )
 
 func Serve(files []string, nr int) error {
@@ -15,7 +14,7 @@ func Serve(files []string, nr int) error {
 		return err
 	}
 
-	socketName := c()
+	socketName := "/tmp/mr-1"
 	os.Remove(socketName)
 
 	listener, err := net.Listen("unix", socketName)
@@ -39,10 +38,4 @@ func Serve(files []string, nr int) error {
 	}
 
 	return nil
-}
-
-func c() string {
-	sct := "/tmp/mr-"
-	sct += strconv.Itoa(os.Getuid())
-	return sct
 }

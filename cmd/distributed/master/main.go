@@ -7,14 +7,15 @@ import (
 )
 
 func main() {
-	dirs, err := os.ReadDir("words/text")
+	folder := "words/text"
+	dirs, err := os.ReadDir(folder)
 	if err != nil {
 		panic(err)
 	}
 
 	var files []string
 	for _, dir := range dirs {
-		files = append(files, dir.Name())
+		files = append(files, "words/text"+"/"+dir.Name())
 	}
 
 	if err := master.Serve(files, 3); err != nil {

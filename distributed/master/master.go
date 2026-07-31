@@ -49,8 +49,9 @@ func (m *Master) GetTask(req shared.GetTaskRequest, res *shared.GetTaskResponse)
 	defer m.mu.Unlock()
 	var input string
 	var task shared.TaskType
+	var taskId string
 
-	for _, t := range m.task {
+	for k, t := range m.task {
 		if m.mapCount > 0 {
 			if t.Type == shared.Map && t.State == shared.Idle {
 				// response
@@ -60,6 +61,8 @@ func (m *Master) GetTask(req shared.GetTaskRequest, res *shared.GetTaskResponse)
 				// master details
 				t.Start = time.Now()
 				t.State = shared.Inprogress
+				taskId = k
+
 				break
 			}
 		} else {
@@ -71,6 +74,7 @@ func (m *Master) GetTask(req shared.GetTaskRequest, res *shared.GetTaskResponse)
 				// master details
 				t.Start = time.Now()
 				t.State = shared.Inprogress
+				taskId = k
 
 				break
 			}
@@ -80,6 +84,7 @@ func (m *Master) GetTask(req shared.GetTaskRequest, res *shared.GetTaskResponse)
 	*res = shared.GetTaskResponse{
 		Input: input,
 		Task:  task,
+		Id:    taskId,
 	}
 	return nil
 }

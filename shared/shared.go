@@ -32,14 +32,15 @@ type Task struct {
 	R     string
 }
 
+type GetTaskRequest struct{}
+type GetTaskResponse struct {
+	Input string // file for map and reduce id for reduce
+	Task  TaskType
+	Id    string
+}
+
 type CompleteTaskRequest struct {
 	Task   TaskType
 	Output string
 }
 type CompleteTaskResponse struct{}
-
-type GetTaskRequest struct{}
-type GetTaskResponse struct {
-	Input string // file for map and reduce id for reduce
-	Task  TaskType
-}
