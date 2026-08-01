@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ademolahh/map-reduce-impl/shared"
+	"github.com/ademolahh/map-reduce-impl/internal/shared"
 )
 
 func runMapPhase(mps func(string, string) []shared.KV, folder string) (shared.KeyValue, error) {

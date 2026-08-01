@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/ademolahh/map-reduce-impl/shared"
+	"github.com/ademolahh/map-reduce-impl/internal/shared"
 )
 
 func (w *Worker) mapFunc(response shared.GetTaskResponse, mps func(string, string) []shared.KV) error {
@@ -19,7 +19,7 @@ func (w *Worker) mapFunc(response shared.GetTaskResponse, mps func(string, strin
 
 	kv := mps(response.Input, string(data))
 
-	if err := Loop(kv, response.Id); err != nil {
+	if err := loop(kv, response.Id, response.NReduce); err != nil {
 		return err
 	}
 
@@ -32,13 +32,13 @@ func (w *Worker) mapFunc(response shared.GetTaskResponse, mps func(string, strin
 	return err
 }
 
-func Loop(kv []shared.KV, id string) error {
+func loop(kv []shared.KV, id string, nr int) error {
 
 	result := make(map[int][]shared.KV)
 
 	for _, v := range kv {
 		key := v.Word
-		ptn := r(key) % 5
+		ptn := r(key) % nr
 		result[ptn] = append(result[ptn], v)
 	}
 

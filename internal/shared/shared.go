@@ -50,9 +50,10 @@ type Task struct {
 
 type GetTaskRequest struct{}
 type GetTaskResponse struct {
-	Input string // file for map and reduce id for reduce
-	Task  TaskType
-	Id    string
+	Input   string // file for map and reduce id for reduce
+	Task    TaskType
+	Id      string
+	NReduce int
 }
 
 type CompleteTaskRequest struct {

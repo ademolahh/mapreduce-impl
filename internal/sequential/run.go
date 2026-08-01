@@ -6,7 +6,7 @@ import (
 	"log"
 	"sort"
 
-	"github.com/ademolahh/map-reduce-impl/shared"
+	"github.com/ademolahh/map-reduce-impl/internal/shared"
 )
 
 const READ_FOLDER string = "words/text"

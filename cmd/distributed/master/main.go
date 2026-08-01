@@ -1,9 +1,10 @@
 package main
 
 import (
+	"flag"
 	"os"
 
-	"github.com/ademolahh/map-reduce-impl/distributed/master"
+	"github.com/ademolahh/map-reduce-impl/internal/distributed/master"
 )
 
 func main() {
@@ -18,7 +19,10 @@ func main() {
 		files = append(files, "words/text"+"/"+dir.Name())
 	}
 
-	ms := master.New(files, 5)
+	nr := flag.Int("nr", 0, "number of reduce task")
+	flag.Parse()
+
+	ms := master.New(files, *nr)
 
 	if err := master.Serve(ms); err != nil {
 		panic(err)

@@ -1,6 +1,10 @@
 package main
 
-import "github.com/ademolahh/map-reduce-impl/distributed/worker"
+import (
+	"flag"
+
+	"github.com/ademolahh/map-reduce-impl/internal/distributed/worker"
+)
 
 func main() {
 	worker, err := worker.New()
@@ -8,7 +12,10 @@ func main() {
 		panic(err)
 	}
 
-	if err := worker.Work(); err != nil {
+	programPath := flag.String("program", "", "path to MapReduce application plugin (.so file)")
+	flag.Parse()
+
+	if err := worker.Work(*programPath); err != nil {
 		panic(err)
 	}
 }

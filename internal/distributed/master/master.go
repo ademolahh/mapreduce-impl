@@ -6,13 +6,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ademolahh/map-reduce-impl/shared"
+	"github.com/ademolahh/map-reduce-impl/internal/shared"
 )
 
 type Master struct {
 	mu          sync.Mutex
 	mapCount    int
 	reduceCount int
+	nReduce     int
 	task        map[string]*shared.Task
 }
 
@@ -41,6 +42,7 @@ func New(files []string, nr int) *Master {
 		mapCount:    len(files),
 		reduceCount: nr,
 		task:        task,
+		nReduce:     nr,
 	}
 }
 
@@ -82,9 +84,10 @@ func (m *Master) GetTask(req shared.GetTaskRequest, res *shared.GetTaskResponse)
 	}
 
 	*res = shared.GetTaskResponse{
-		Input: input,
-		Task:  task,
-		Id:    taskId,
+		Input:   input,
+		Task:    task,
+		Id:      taskId,
+		NReduce: m.nReduce,
 	}
 	return nil
 }
@@ -93,7 +96,7 @@ func (m *Master) CompleteTask(req shared.CompleteTaskRequest, res *shared.Comple
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if m.reduceCount > 0 {
+	if m.reduceCount > 0 && m.task[req.Output] != nil {
 		if m.task[req.Output].State != shared.Inprogress {
 			return fmt.Errorf("invalid state: %s %v", req.Output, m.task[req.Output].State)
 		}

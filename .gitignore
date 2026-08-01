@@ -1,5 +1,5 @@
 words
 a.so
-distributed/worker/wordcount.so
+wordcount.so
 tmp
 mapresult

@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ademolahh/map-reduce-impl/shared"
+	"github.com/ademolahh/map-reduce-impl/internal/shared"
 )
 
 func (w *Worker) reduceFunc(response shared.GetTaskResponse, mapResultFolder string,
@@ -25,7 +25,8 @@ func (w *Worker) reduceFunc(response shared.GetTaskResponse, mapResultFolder str
 	for _, dir := range dirs {
 		name := dir.Name()
 		name = strings.TrimSuffix(name, filepath.Ext(name))
-		rdcTask := name[len(name)-1]
+		r := strings.Split(name, "-")
+		rdcTask := r[len(r)-1]
 
 		if response.Input != string(rdcTask) {
 			continue

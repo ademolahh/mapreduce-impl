@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ademolahh/map-reduce-impl/shared"
+	"github.com/ademolahh/map-reduce-impl/internal/shared"
 )
 
 type Worker struct {
@@ -23,8 +23,8 @@ func New() (*Worker, error) {
 	return &Worker{client: client}, nil
 }
 
-func (w *Worker) Work() error {
-	mps, rdc, err := shared.Fetch("distributed/worker/wordcount.so")
+func (w *Worker) Work(programPath string) error {
+	mps, rdc, err := shared.Fetch(programPath)
 	mapResultFolder := "mapresult"
 	if err != nil {
 		return err

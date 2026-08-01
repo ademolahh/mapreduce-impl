@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ademolahh/map-reduce-impl/shared"
+	"github.com/ademolahh/map-reduce-impl/internal/shared"
 )
 
 func TestRunMapPhase(t *testing.T) {

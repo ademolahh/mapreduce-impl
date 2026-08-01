@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ademolahh/map-reduce-impl/sequential"
+	"github.com/ademolahh/map-reduce-impl/internal/sequential"
 )
 
 func main() {
