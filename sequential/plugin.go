@@ -7,13 +7,13 @@ import (
 	"github.com/ademolahh/map-reduce-impl/shared"
 )
 
-func runMapPhase(mps func(string, string) []shared.KV, folder string) (KeyValue, error) {
+func runMapPhase(mps func(string, string) []shared.KV, folder string) (shared.KeyValue, error) {
 	dirs, err := os.ReadDir(folder)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read folder %q: %w", folder, err)
 	}
 
-	var k KeyValue
+	var k shared.KeyValue
 	for _, dir := range dirs {
 		path := folder + "/" + dir.Name()
 		data, err := os.ReadFile(path)
@@ -29,7 +29,7 @@ func runMapPhase(mps func(string, string) []shared.KV, folder string) (KeyValue,
 	return k, nil
 }
 
-func runReducePhase(k KeyValue, rdc func(string, []string) string, outPath string) error {
+func runReducePhase(k shared.KeyValue, rdc func(string, []string) string, outPath string) error {
 	mr, err := os.Create(outPath)
 	if err != nil {
 		return fmt.Errorf("failed to create output file %q: %w", outPath, err)

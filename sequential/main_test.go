@@ -55,7 +55,7 @@ func TestRunReducePhase(t *testing.T) {
 	dir := t.TempDir()
 	outPath := filepath.Join(dir, "result.txt")
 
-	k := KeyValue{
+	k := shared.KeyValue{
 		{Word: "go", Value: "1"},
 		{Word: "hello", Value: "1"},
 		{Word: "hello", Value: "1"},

@@ -6,10 +6,11 @@ import (
 	"net"
 	"net/rpc"
 	"os"
+	"time"
 )
 
-func Serve(files []string, nr int) error {
-	master := New(files, nr)
+func Serve(master *Master) error {
+
 	if err := rpc.Register(master); err != nil {
 		return err
 	}
@@ -22,6 +23,14 @@ func Serve(files []string, nr int) error {
 		return err
 	}
 	fmt.Println("Started")
+
+	go func() {
+		for !master.Done() {
+			time.Sleep(1 * time.Second)
+		}
+
+		os.Exit(1)
+	}()
 
 	go master.Checker()
 

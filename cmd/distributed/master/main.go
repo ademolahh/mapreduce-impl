@@ -18,7 +18,10 @@ func main() {
 		files = append(files, "words/text"+"/"+dir.Name())
 	}
 
-	if err := master.Serve(files, 3); err != nil {
+	ms := master.New(files, 5)
+
+	if err := master.Serve(ms); err != nil {
 		panic(err)
 	}
+
 }

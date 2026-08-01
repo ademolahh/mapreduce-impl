@@ -1,10 +1,26 @@
 package shared
 
-import "time"
+import (
+	"time"
+)
 
 type KV struct {
 	Word  string `json:"word"`
 	Value string `json:"value"`
+}
+
+type KeyValue []KV
+
+func (kv KeyValue) Len() int {
+	return len(kv)
+}
+
+func (kv KeyValue) Less(i, j int) bool {
+	return kv[i].Word < kv[j].Word
+}
+
+func (kv KeyValue) Swap(i, j int) {
+	kv[i], kv[j] = kv[j], kv[i]
 }
 
 type StateType int

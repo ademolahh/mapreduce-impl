@@ -93,15 +93,17 @@ func (m *Master) CompleteTask(req shared.CompleteTaskRequest, res *shared.Comple
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if m.task[req.Output].State != shared.Inprogress {
-		return fmt.Errorf("invalid state")
-	}
+	if m.reduceCount > 0 {
+		if m.task[req.Output].State != shared.Inprogress {
+			return fmt.Errorf("invalid state: %s %v", req.Output, m.task[req.Output].State)
+		}
 
-	m.task[req.Output].State = shared.Done
-	if req.Task == shared.Map {
-		m.mapCount--
-	} else {
-		m.reduceCount--
+		m.task[req.Output].State = shared.Done
+		if req.Task == shared.Map {
+			m.mapCount--
+		} else {
+			m.reduceCount--
+		}
 	}
 
 	return nil
@@ -117,5 +119,12 @@ func (m *Master) Checker() {
 			}
 		}
 		m.mu.Unlock()
+
 	}
+}
+
+func (m *Master) Done() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.reduceCount == 0
 }
